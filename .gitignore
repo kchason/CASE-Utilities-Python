@@ -5,3 +5,5 @@ __pycache__
 build/
 case_utils.egg-info/
 dist/
+.idea/
+test_files/
