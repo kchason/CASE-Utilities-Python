@@ -118,6 +118,20 @@ def main() -> None:
       help="(ALMOST as with pyshacl CLI) Send output to a file.  If absent, output will be written to stdout.  Difference: If specified, file is expected not to exist.  Clarification: Does NOT influence --format flag's default value of \"human\".  (I.e., any machine-readable serialization format must be specified with --format.)",
       default=sys.stdout,
     )
+    parser.add_argument(
+      '-r',
+      '--recursive',
+      action='store_true',
+      default=False,
+      help="Allows passing of a directory for recursive validation of multiple CASE files in one execution",
+    )
+    parser.add_argument(
+        '-e',
+        '--extension',
+        default='',
+        help="Only used if --recursive (-r) is enabled. Filters files within provided directories to only those with"
+             "the provided extension",
+    )
 
     parser.add_argument("in_graph", nargs="+")
 
@@ -125,8 +139,23 @@ def main() -> None:
 
     data_graph = rdflib.Graph()
     for in_graph in args.in_graph:
-        _logger.debug("in_graph = %r.", in_graph)
-        data_graph.parse(in_graph)
+        # If the provided path is a directory, then add all matching files within the directory if it's set to be
+        # recursive, else throw an error
+        if os.path.isdir(in_graph):
+            if args.recursive:
+                for file in os.listdir(in_graph):
+                    full_path = os.path.join(in_graph, file)
+                    # Ensure it matches the provided extension (if provided)
+                    if len(args.extension) == 0 or file.endswith(args.extension):
+                        _logger.debug("in_graph = %r.", full_path)
+                        data_graph.parse(full_path)
+                    else:
+                        _logger.debug("File does not match extension %r.", full_path)
+            else:
+                _logger.critical("Provided path is a directory and the recursive flag is not enabled: %r", in_graph)
+        else:
+            _logger.debug("in_graph = %r.", in_graph)
+            data_graph.parse(in_graph)
 
     ontology_graph = rdflib.Graph()
     if args.built_version != "none":
