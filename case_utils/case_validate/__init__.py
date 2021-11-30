@@ -60,15 +60,15 @@ def main() -> None:
 
     # Add arguments specific to case_validate.
     parser.add_argument(
-      '-d',
-      '--debug',
-      action='store_true',
-      help='Output additional runtime messages.'
+        '-d',
+        '--debug',
+        action='store_true',
+        help='Output additional runtime messages.'
     )
     parser.add_argument(
       "--built-version",
       choices=tuple(built_version_choices_list),
-      default="case-"+CURRENT_CASE_VERSION,
+      default="case-"+ CURRENT_CASE_VERSION,
       help="Monolithic aggregation of CASE ontology files at certain versions.  Does not require networking to use.  Default is most recent CASE release."
     )
     parser.add_argument(
@@ -118,20 +118,6 @@ def main() -> None:
       help="(ALMOST as with pyshacl CLI) Send output to a file.  If absent, output will be written to stdout.  Difference: If specified, file is expected not to exist.  Clarification: Does NOT influence --format flag's default value of \"human\".  (I.e., any machine-readable serialization format must be specified with --format.)",
       default=sys.stdout,
     )
-    parser.add_argument(
-      '-r',
-      '--recursive',
-      action='store_true',
-      default=False,
-      help="Allows passing of a directory for recursive validation of multiple CASE files in one execution",
-    )
-    parser.add_argument(
-        '-e',
-        '--extension',
-        default='',
-        help="Only used if --recursive (-r) is enabled. Filters files within provided directories to only those with"
-             "the provided extension",
-    )
 
     parser.add_argument("in_graph", nargs="+")
 
@@ -142,17 +128,10 @@ def main() -> None:
         # If the provided path is a directory, then add all matching files within the directory if it's set to be
         # recursive, else throw an error
         if os.path.isdir(in_graph):
-            if args.recursive:
-                for file in os.listdir(in_graph):
-                    full_path = os.path.join(in_graph, file)
-                    # Ensure it matches the provided extension (if provided)
-                    if len(args.extension) == 0 or file.endswith(args.extension):
-                        _logger.debug("in_graph = %r.", full_path)
-                        data_graph.parse(full_path)
-                    else:
-                        _logger.debug("File does not match extension %r.", full_path)
-            else:
-                _logger.critical("Provided path is a directory and the recursive flag is not enabled: %r", in_graph)
+            for file in os.listdir(in_graph):
+                full_path = os.path.join(in_graph, file)
+                _logger.debug("in_graph = %r.", full_path)
+                data_graph.parse(full_path)
         else:
             _logger.debug("in_graph = %r.", in_graph)
             data_graph.parse(in_graph)
@@ -217,6 +196,6 @@ def main() -> None:
             raise NotImplementedError("Unexpected result type returned from validate: %r." % type(validation_graph))
 
     sys.exit(0 if conforms else 1)
-    
+
 if __name__ == "__main__":
     main()
