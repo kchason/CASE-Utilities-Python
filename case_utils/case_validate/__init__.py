@@ -48,6 +48,7 @@ from case_utils.ontology.version_info import *
 
 _logger = logging.getLogger(os.path.basename(__file__))
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="CASE wrapper to pySHACL command line tool.")
 
@@ -72,51 +73,51 @@ def main() -> None:
       help="Monolithic aggregation of CASE ontology files at certain versions.  Does not require networking to use.  Default is most recent CASE release."
     )
     parser.add_argument(
-      "--ontology-graph",
-      action="append",
-      help="Combined ontology (i.e. subclass hierarchy) and shapes (SHACL) file, in any format accepted by rdflib recognized by file extension (e.g. .ttl).  Will supplement ontology selected by --built-version.  Can be given multiple times."
+        "--ontology-graph",
+        action="append",
+        help="Combined ontology (i.e. subclass hierarchy) and shapes (SHACL) file, in any format accepted by rdflib recognized by file extension (e.g. .ttl).  Will supplement ontology selected by --built-version.  Can be given multiple times."
     )
 
     # Inherit arguments from pyshacl.
     parser.add_argument(
-      '--abort',
-      action='store_true',
-      help='(As with pyshacl CLI) Abort on first invalid data.'
+        '--abort',
+        action='store_true',
+        help='(As with pyshacl CLI) Abort on first invalid data.'
     )
     parser.add_argument(
-      '-w',
-      '--allow-warnings',
-      action='store_true',
-      help='(As with pyshacl CLI) Shapes marked with severity of Warning or Info will not cause result to be invalid.',
+        '-w',
+        '--allow-warnings',
+        action='store_true',
+        help='(As with pyshacl CLI) Shapes marked with severity of Warning or Info will not cause result to be invalid.',
     )
     parser.add_argument(
-      "-f",
-      "--format",
-      choices=('human', 'turtle', 'xml', 'json-ld', 'nt', 'n3'),
-      default='human',
-      help="(ALMOST as with pyshacl CLI) Choose an output format. Default is \"human\".  Difference: 'table' not provided."
+        "-f",
+        "--format",
+        choices=('human', 'turtle', 'xml', 'json-ld', 'nt', 'n3'),
+        default='human',
+        help="(ALMOST as with pyshacl CLI) Choose an output format. Default is \"human\".  Difference: 'table' not provided."
     )
     parser.add_argument(
-      '-im',
-      '--imports',
-      action='store_true',
-      help='(As with pyshacl CLI) Allow import of sub-graphs defined in statements with owl:imports.',
+        '-im',
+        '--imports',
+        action='store_true',
+        help='(As with pyshacl CLI) Allow import of sub-graphs defined in statements with owl:imports.',
     )
     parser.add_argument(
-      '-i',
-      '--inference',
-      choices=('none', 'rdfs', 'owlrl', 'both'),
-      default='none',
-      help="(As with pyshacl CLI) Choose a type of inferencing to run against the Data Graph before validating. Default is \"none\".",
+        '-i',
+        '--inference',
+        choices=('none', 'rdfs', 'owlrl', 'both'),
+        default='none',
+        help="(As with pyshacl CLI) Choose a type of inferencing to run against the Data Graph before validating. Default is \"none\".",
     )
     parser.add_argument(
-      '-o',
-      '--output',
-      dest='output',
-      nargs='?',
-      type=argparse.FileType('x'),
-      help="(ALMOST as with pyshacl CLI) Send output to a file.  If absent, output will be written to stdout.  Difference: If specified, file is expected not to exist.  Clarification: Does NOT influence --format flag's default value of \"human\".  (I.e., any machine-readable serialization format must be specified with --format.)",
-      default=sys.stdout,
+        '-o',
+        '--output',
+        dest='output',
+        nargs='?',
+        type=argparse.FileType('x'),
+        help="(ALMOST as with pyshacl CLI) Send output to a file.  If absent, output will be written to stdout.  Difference: If specified, file is expected not to exist.  Clarification: Does NOT influence --format flag's default value of \"human\".  (I.e., any machine-readable serialization format must be specified with --format.)",
+        default=sys.stdout,
     )
 
     parser.add_argument("in_graph", nargs="+")
@@ -153,25 +154,25 @@ def main() -> None:
     # determination by output file extension.  case_validate will defer
     # to pySHACL behavior, as other CASE tools don't (at the time of
     # this writing) have the value "human" as an output format.
-    validator_kwargs : typing.Dict[str, str] = dict()
+    validator_kwargs: typing.Dict[str, str] = dict()
     if args.format != "human":
         validator_kwargs['serialize_report_graph'] = args.format
 
-    validate_result : typing.Tuple[
-      bool,
-      typing.Union[Exception, bytes, str, rdflib.Graph],
-      str
+    validate_result: typing.Tuple[
+        bool,
+        typing.Union[Exception, bytes, str, rdflib.Graph],
+        str
     ]
     validate_result = pyshacl.validate(
-      data_graph,
-      shacl_graph=ontology_graph,
-      ont_graph=ontology_graph,
-      inference=args.inference,
-      abort_on_first=args.abort,
-      allow_warnings=True if args.allow_warnings else False,
-      debug=True if args.debug else False,
-      do_owl_imports=True if args.imports else False,
-      **validator_kwargs
+        data_graph,
+        shacl_graph=ontology_graph,
+        ont_graph=ontology_graph,
+        inference=args.inference,
+        abort_on_first=args.abort,
+        allow_warnings=True if args.allow_warnings else False,
+        debug=True if args.debug else False,
+        do_owl_imports=True if args.imports else False,
+        **validator_kwargs
     )
 
     # Relieve RAM of the data graph after validation has run.
