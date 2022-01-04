@@ -1,0 +1,28 @@
+@prefix case-investigation: <https://ontology.caseontology.org/case/investigation/> .
+@prefix kb: <http://example.org/kb/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix uco-core: <https://unifiedcyberontology.org/ontology/uco/core#> .
+@prefix uco-observable: <https://unifiedcyberontology.org/ontology/uco/observable#> .
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
+
+kb:file-facet-1
+	rdfs:comment
+		"The UcoObject that has this Facet is defined in shallow_2.json."@en ,
+		"This node's type is specified in deep_1.ttl."@en
+		;
+	uco-observable:sizeInBytes "test.dat" ;
+	.
+
+kb:provenance-record-1
+	a case-investigation:ProvenanceRecord ;
+	rdfs:comment "The object referenced in this node is defined in shallow_2.json."@en ;
+	uco-core:object kb:file-1 ;
+	.
+
+kb:file-1
+	rdfs:comment "This node's type is specified in deep_1.ttl."@en ;
+	uco-core:hasFacet kb:file-facet-1 ;
+	.
+
