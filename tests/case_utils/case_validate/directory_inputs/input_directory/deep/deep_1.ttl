@@ -1,0 +1,12 @@
+@prefix kb: <http://example.org/kb/> .
+@prefix case-investigation: <https://ontology.caseontology.org/case/investigation/> .
+@prefix uco-observable: <https://unifiedcyberontology.org/ontology/uco/observable#> .
+
+kb:file-1
+	a uco-observable:File ;
+	.
+
+kb:file-facet-1
+	a uco-observable:FileFacet ;
+	.
+

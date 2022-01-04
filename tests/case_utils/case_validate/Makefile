@@ -20,14 +20,17 @@ tests_srcdir := $(top_srcdir)/tests
 all: \
   all-cli \
   all-case_test_examples \
+  all-directory_inputs \
   all-uco_test_examples
 
 .PHONY: \
   all-case_test_examples \
   all-cli \
+  all-directory_inputs \
   all-uco_test_examples \
   check-case_test_examples \
   check-cli \
+  check-directory_inputs \
   check-uco_test_examples
 
 all-case_test_examples:
@@ -38,6 +41,10 @@ all-cli:
 	$(MAKE) \
 	  --directory cli
 
+all-directory_inputs:
+	$(MAKE) \
+	  --directory directory_inputs
+
 all-uco_test_examples:
 	$(MAKE) \
 	  --directory uco_test_examples
@@ -45,6 +52,7 @@ all-uco_test_examples:
 check: \
   check-cli \
   check-case_test_examples \
+  check-directory_inputs \
   check-uco_test_examples
 
 check-case_test_examples:
@@ -55,6 +63,11 @@ check-case_test_examples:
 check-cli:
 	$(MAKE) \
 	  --directory cli \
+	  check
+
+check-directory_inputs:
+	$(MAKE) \
+	  --directory directory_inputs \
 	  check
 
 check-uco_test_examples:
@@ -71,4 +84,7 @@ clean:
 	  clean
 	@$(MAKE) \
 	  --directory cli \
+	  clean
+	@$(MAKE) \
+	  --directory directory_inputs \
 	  clean

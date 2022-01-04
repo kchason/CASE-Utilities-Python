@@ -1,0 +1,19 @@
+{
+    "@context": {
+        "case-investigation": "https://ontology.caseontology.org/case/investigation/",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "uco-core": "https://unifiedcyberontology.org/ontology/uco/core#"
+    },
+    "@graph": [
+        {
+            "@id": "kb:file-1",
+            "rdfs:comment": {
+                "@language": "en",
+                "@value": "This node's type is specified in deep_1.ttl."
+            },
+            "uco-core:hasFacet": {
+                "@id": "kb:file-facet-1"
+            }
+        }
+    ]
+}

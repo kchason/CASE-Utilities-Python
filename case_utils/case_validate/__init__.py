@@ -38,6 +38,7 @@ import os
 import pathlib
 import sys
 import typing
+import warnings
 
 import rdflib.util  # type: ignore
 import pyshacl  # type: ignore
@@ -76,6 +77,14 @@ def main() -> None:
       "--ontology-graph",
       action="append",
       help="Combined ontology (i.e. subclass hierarchy) and shapes (SHACL) file, in any format accepted by rdflib recognized by file extension (e.g. .ttl).  Will supplement ontology selected by --built-version.  Can be given multiple times."
+    )
+    # TODO - Review semantic intentions of this flag.  What is meant to happen when a directory is passed, but no -r is passed?
+    parser.add_argument(
+      '-r',
+      '--recursive',
+      action='store_true',
+      default=False,
+      help="Allows passing of a directory for recursive validation of multiple CASE files in one execution",
     )
 
     # Inherit arguments from pyshacl.
@@ -125,17 +134,32 @@ def main() -> None:
     args = parser.parse_args()
 
     data_graph = rdflib.Graph()
+
+    # This is the set of all non-directory files provided as input graph file names.
+    in_graph_filenames: typing.Set[str] = set()
+
     for in_graph in args.in_graph:
         # If the provided path is a directory, then add all matching files within the directory if it's set to be
         # recursive, else throw an error
         if os.path.isdir(in_graph):
-            for file in os.listdir(in_graph):
-                full_path = os.path.join(in_graph, file)
-                _logger.debug("in_graph = %r.", full_path)
-                data_graph.parse(full_path)
+            for (dirpath, dirnames, filenames) in os.walk(in_graph, topdown=True):
+                _logger.debug("Walking %r.", dirpath)
+                _logger.debug("Walking dirnames, pre = %r.", dirnames)
+                for filename in filenames:
+                    full_path = os.path.join(dirpath, filename)
+                    in_graph_filenames.add(full_path)
+                if len(dirnames) > 0:
+                    if not args.recursive:
+                        warnings.warn("Skipping directory inputs under %r." % dirpath)
+                        dirnames.clear()
+                        # TODO - discuss
+                        # raise IsADirectoryError(in_graph)
+                _logger.debug("Walking dirnames, post = %r.", dirnames)
         else:
-            _logger.debug("in_graph = %r.", in_graph)
-            data_graph.parse(in_graph)
+            in_graph_filenames.add(in_graph)
+    for in_graph_filename in sorted(in_graph_filenames):
+        _logger.debug("in_graph_filename = %r.", in_graph_filename)
+        data_graph.parse(in_graph_filename)
 
     ontology_graph = rdflib.Graph()
     if args.built_version != "none":
